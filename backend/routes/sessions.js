@@ -4,22 +4,29 @@ const router = express.Router();
 
 // Create a new session
 router.post('/', async (req, res) => {
-  const { sessionName, trainer, startTime, endTime, availableSlots } = req.body;
-
   try {
-    const session = new Session({ sessionName, trainer, startTime, endTime, availableSlots });
+    const { sessionName, coach, startTime, endTime, availableSlots } = req.body;
+
+    const session = new Session({
+      sessionName,
+      coach,
+      startTime,
+      endTime,
+      availableSlots,
+    });
+
     await session.save();
-    res.status(201).json(session);
+    res.status(201).json({ message: 'Session created successfully!', session });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
 // Get all available sessions
 router.get('/', async (req, res) => {
   try {
-    const sessions = await Session.find(); // No populate here
-    res.json(sessions);
+    const sessions = await Session.find();
+    res.status(200).json(sessions);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -27,10 +34,10 @@ router.get('/', async (req, res) => {
 
 // Book a session
 router.post('/:id/book', async (req, res) => {
-  const sessionId = req.params.id;
-  const userId = req.user.id;
-
   try {
+    const sessionId = req.params.id;
+    const { userId } = req.body; // Pass userId in request body
+
     const session = await Session.findById(sessionId);
     if (!session) {
       return res.status(404).json({ message: 'Session not found' });
@@ -42,7 +49,47 @@ router.post('/:id/book', async (req, res) => {
 
     session.availableSlots -= 1;
     await session.save();
-    res.status(200).json({ message: 'Session booked successfully' });
+    res.status(200).json({ message: 'Session booked successfully', session });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    console.log('Request Params:', req.params);
+    console.log('Request Body:', req.body);
+    
+    const sessionId = req.params.id;
+    const { sessionName, coach, startTime, endTime, availableSlots } = req.body;
+
+    const session = await Session.findById(sessionId);
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+
+    // Update the session details
+    session.sessionName = sessionName || session.sessionName;
+    session.coach = coach || session.coach;
+    session.startTime = startTime || session.startTime;
+    session.endTime = endTime || session.endTime;
+    session.availableSlots = availableSlots || session.availableSlots;
+
+    await session.save();
+    res.status(200).json({ message: 'Session updated successfully', session });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Delete a session
+router.delete('/:id', async (req, res) => {
+  try {
+    const session = await Session.findByIdAndDelete(req.params.id);
+    if (!session) {
+      return res.status(404).json({ message: 'Session not found' });
+    }
+    res.status(200).json({ message: 'Session deleted successfully'});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

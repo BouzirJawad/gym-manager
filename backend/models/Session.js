@@ -5,9 +5,8 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  trainer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  coach: {
+    type: String, 
     required: true,
   },
   startTime: {
@@ -21,6 +20,7 @@ const sessionSchema = new mongoose.Schema({
   availableSlots: {
     type: Number,
     required: true,
+    min: 0, 
   },
 });
 
