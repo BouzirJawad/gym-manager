@@ -5,7 +5,7 @@ const sessionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  trainer: {
+  coach: {
     type: String,
     required: true,
   },
@@ -20,6 +20,7 @@ const sessionSchema = new mongoose.Schema({
   availableSlots: {
     type: Number,
     required: true,
+    min: 0, 
   },
 });
 
