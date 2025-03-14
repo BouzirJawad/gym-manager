@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 });
 
 // Book a session
-router.post('/:id/book', async (req, res) => {
+router.post('/:id', async (req, res) => {
   const sessionId = req.params.id;
   const userId = req.user.id;
 

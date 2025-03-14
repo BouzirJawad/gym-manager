@@ -8,13 +8,13 @@ function RegisterPage() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   
-  const [data, setData] = useState(
-    JSON.parse(sessionStorage.getItem("profile")) || {}
+  const [User, setUser] = useState(
+    JSON.parse(sessionStorage.getItem("User")) || {}
   );
 
   useEffect(() => {
-    sessionStorage.setItem("profile", JSON.stringify(data));
-  }, [data]);
+    sessionStorage.setItem("User", JSON.stringify(User));
+  }, [User]);
 
   const onSubmit = async (values, actions) => {
     await handleRegister(values ,()=>{actions.resetForm();});
@@ -33,7 +33,7 @@ function RegisterPage() {
     initialValues: {
       username: "",
       email: "",
-      isAdmin: false,
+      isCoach: false,
       password: "",
       confirmPassword: "",
     },
@@ -43,24 +43,24 @@ function RegisterPage() {
 
   const handleRegister = async (values) => {
     try {
-      const res = await axios.post("http://localhost:9000/api/users/register", {
+      const res = await axios.post("http://localhost:8080/api/users/register", {
         username: values.username,
         email: values.email,
         password: values.password,
-        isAdmin: values.isAdmin,
+        isCoach: values.isCoach,
       });
 
-      setData(res.data)
+      setUser(res.data)
 
       setMessage("Registering ...");
       setTimeout(() => {
-        console.log(res.data.isAdmin);
-        if (res.data.isAdmin) {
-          navigate("/AdminPage");
-          console.log("this is admin page");
+        console.log(res.data.isCoach);
+        if (res.data.isCoach) {
+        //   navigate("/AdminPage");
+          console.log("this is coach page");
         } else {
-          navigate("/Store");
-          console.log("this is store page");
+        //   navigate("/Store");
+          console.log("this is memebers page");
         }
         setMessage("");
       }, 2000);
@@ -114,11 +114,11 @@ function RegisterPage() {
         )}
 
         <select
-          name="isAdmin"
+          name="isCoach"
           placeholder="select your role"
-          value={values.isAdmin}
+          value={values.isCoach}
           onChange={(e) => handleChange({ 
-            target: { name: "isAdmin", value: e.target.value === "true" } 
+            target: { name: "isCoach", value: e.target.value === "true" } 
           })}
           className={
             errors.email && touched.email
@@ -126,11 +126,11 @@ function RegisterPage() {
               : "border-2 rounded-2xl p-2 mb-1 w-full"
           }
         >
-          <option value="false">User</option>
-          <option value="true">Admin</option>
+          <option value="false">Member</option>
+          <option value="true">Coach</option>
         </select>
-        {errors.isAdmin && touched.isAdmin && (
-          <p className="text-xs mb-1 text-red-500">{errors.isAdmin}</p>
+        {errors.isCoach && touched.isCoach && (
+          <p className="text-xs mb-1 text-red-500">{errors.isCoach}</p>
         )}
 
         <input

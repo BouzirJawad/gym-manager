@@ -9,13 +9,13 @@ function LoginPage() {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const [data, setData] = useState(
-      JSON.parse(sessionStorage.getItem("profile1")) || {}
+  const [User, setUser] = useState(
+      JSON.parse(sessionStorage.getItem("User")) || {}
     );
   
     useEffect(() => {
-      sessionStorage.setItem("profile1", JSON.stringify(data));
-    }, [data]);
+      sessionStorage.setItem("User", JSON.stringify(User));
+    }, [User]);
 
   const onSubmit = async (values, action) => {
     await handleLogin(values, ()=>{action.resetForm();});
@@ -34,22 +34,21 @@ function LoginPage() {
   const handleLogin = async () => {
     try {
       
-      const res = await axios.post("http://localhost:9000/api/users/login", { email: values.email, password: values.password });
+      const res = await axios.post("http://localhost:8080/api/users/login", { email: values.email, password: values.password });
 
       if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
+        sessionStorage.setItem("authToken", res.data.token);
         setMessage("Logged In ...");
 
-        setData(res.data.user)
+        setUser(res.data.user)
         
         setTimeout(() => {
-          console.log(data);
-          if (res.data.user.isAdmin) {
-            navigate("/AdminPage");
-            console.log("this is admin page");
+          if (res.data.user.isCoach) {
+            // navigate("/AdminPage");
+            console.log("this is coach page");
           } else {
-            navigate("/Store");
-            console.log("this is store page");
+            // navigate("/Store");
+            console.log("this is members page");
           }
           setMessage("");
         }, 2000);

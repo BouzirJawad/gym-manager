@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 require('dotenv').config()
 
-router.post('/register', async (res, res) => {
+router.post('/register', async (req, res) => {
     
     try {
         const { username, email, password, isCoach } = req.body

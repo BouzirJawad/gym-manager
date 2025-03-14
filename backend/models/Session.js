@@ -6,8 +6,7 @@ const sessionSchema = new mongoose.Schema({
     required: true,
   },
   trainer: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
   startTime: {
