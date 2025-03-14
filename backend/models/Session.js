@@ -6,7 +6,7 @@ const sessionSchema = new mongoose.Schema({
     required: true,
   },
   coach: {
-    type: String, 
+    type: String,
     required: true,
   },
   startTime: {

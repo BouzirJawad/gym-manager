@@ -2,21 +2,18 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const DashboardPage = () => {
-  const [userDetails, setUserDetails] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setTimeout(() => {
-      const mockUser = {
-        name: "John Doe",
-        role: "Admin",
-      };
+  const getUser = () => {
+     const user = JSON.parse(sessionStorage.getItem("User"))
+     if (user) { return user }
+  }
 
-      setUserDetails(mockUser);
-      setLoading(false);
-    }, 1000);
+  useEffect(() => {
+    getUser(); 
   }, []);
 
   if (loading) return <div className="text-center text-gray-600">Loading...</div>;
@@ -27,7 +24,7 @@ const DashboardPage = () => {
         <h1 className="text-5xl font-bold text-center text-purple-300 mb-8">Welcome to Your Dashboard</h1>
         {userDetails ? (
           <div className="text-center">
-            <h2 className="text-3xl font-semibold text-white mb-4">Welcome, {userDetails.name}!</h2>
+            <h2 className="text-3xl font-semibold text-white mb-4">Welcome, {user}!</h2>
             <p className="text-xl text-gray-200 mb-8">Role: {userDetails.role}</p>
             <button
               onClick={() => navigate("/login")}
