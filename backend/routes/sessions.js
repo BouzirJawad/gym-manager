@@ -1,5 +1,5 @@
 const express = require('express');
-const Session = require('../models/session');
+const Session = require('../models/Session');
 const router = express.Router();
 
 // Create a new session
