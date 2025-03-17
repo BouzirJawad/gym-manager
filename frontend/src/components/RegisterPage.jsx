@@ -2,19 +2,19 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import { registerSchema } from "../schemas/registerSchema";
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function RegisterPage() {
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   
-  const [User, setUser] = useState(
+  const [user, setUser] = useState(
     JSON.parse(sessionStorage.getItem("User")) || {}
   );
 
   useEffect(() => {
-    sessionStorage.setItem("User", JSON.stringify(User));
-  }, [User]);
+    sessionStorage.setItem("User", JSON.stringify(user));
+  }, [user]);
 
   const onSubmit = async (values, actions) => {
     await handleRegister(values ,()=>{actions.resetForm();});
@@ -50,32 +50,35 @@ function RegisterPage() {
         isCoach: values.isCoach,
       });
 
-      setUser(res.data)
+      if(res.data.token){
+        sessionStorage.setItem("authToken", res.data.token)
+      }
 
-      setMessage("Registering ...");
+      toast.success("Registering ...",{duration:3000})
+      setUser(res.data.newUser)
       setTimeout(() => {
-        console.log(res.data.isCoach);
-        if (res.data.isCoach) {
-        //   navigate("/AdminPage");
-          console.log("this is coach page");
+        console.log(res.data.newUser.isCoach);
+        if (res.data.newUser.isCoach) {
+          navigate("/coach");
+          console.log("this is Coach page");
         } else {
-        //   navigate("/Store");
-          console.log("this is memebers page");
+          navigate("/member");
+          console.log("this is Member page");
         }
-        setMessage("");
       }, 2000);
 
     } catch (err) {
         if (err.response && err.response.status === 404) {
-            setMessage("Email is already in use. Please try a different one.");
+            toast.error("Email is already in use. Please try a different one.",{duration:4000});
         } else {
-            setMessage("Registration failed! Please try again.");
+            toast.error("Registration failed! Please try again.",{duration:4000});
         }
     }
   };
 
   return (
     <>
+      <Toaster position="top-center" />
       <form onSubmit={handleSubmit} autoComplete="off">
         <h2 className="text-2xl text-blue-500 mb-4">Register</h2>
 
@@ -121,7 +124,7 @@ function RegisterPage() {
             target: { name: "isCoach", value: e.target.value === "true" } 
           })}
           className={
-            errors.email && touched.email
+            errors.isCoach && touched.isCoach
               ? "input-error border-2 rounded-2xl p-2 mb-1 w-full"
               : "border-2 rounded-2xl p-2 mb-1 w-full"
           }
@@ -174,8 +177,6 @@ function RegisterPage() {
         >
           Register
         </button>
-
-        <p className="text-blue-500 mt-2 text-center">{message}</p>
       </form>
     </>
   );

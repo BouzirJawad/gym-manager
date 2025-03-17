@@ -10,7 +10,7 @@ const ErrorPage = () => {
         <h2 className="text-5xl font-bold text-pink-400 mb-6">Oops! Access Denied</h2>
         <p className="text-2xl text-gray-300 mb-6">You are not authorized to access this page.</p>
         <button
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/Connect')}
           className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-teal-600 text-white rounded-full shadow-lg hover:bg-gradient-to-l hover:from-teal-700 hover:to-indigo-700 transition-all duration-300"
         >
           Go to Login
