@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useFormik } from 'formik'
 import { loginSchema } from "../schemas/loginSchema";
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
 
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const [User, setUser] = useState(
-      JSON.parse(sessionStorage.getItem("User")) || {}
+      JSON.parse(sessionStorage.getItem("User")) || null
     );
   
     useEffect(() => {
@@ -38,31 +38,30 @@ function LoginPage() {
 
       if (res.data.token) {
         sessionStorage.setItem("authToken", res.data.token);
-        setMessage("Logged In ...");
-
         setUser(res.data.user)
+        
+        toast.success("Logged In ...",{duration:3000});
         
         setTimeout(() => {
           if (res.data.user.isCoach) {
-            // navigate("/AdminPage");
+            navigate("/coach");
             console.log("this is coach page");
           } else {
-            // navigate("/Store");
+            navigate("/member");
             console.log("this is members page");
           }
-          setMessage("");
-        }, 2000);
+        }, 3000);
 
       } else {
-        setMessage(
+        toast.error(
           res.data.message || "Login failed! Check your email and password."
         );
       }
     } catch (err) {
       if (err.response && err.response.status === 400) {
-        setMessage("Incorrect password!");
+        toast.error("Incorrect password!",{duration:3000});
       } else {
-        setMessage("Registration failed! Please try again.");
+        toast.error("Registration failed! Please try again.",{duration:4000});
     }
     }
   };
@@ -74,6 +73,8 @@ function LoginPage() {
             <h2 className="text-2xl text-amber-500 mb-4">
               Login
             </h2>
+
+            <Toaster position="top-center" />
 
             <input
               type="email"
@@ -104,8 +105,6 @@ function LoginPage() {
             <button className="sec-btn w-full" type="submit">
               Login
             </button>
-
-            <p className="text-amber-500 mt-2 text-center">{message}</p>
 
           </form>
     </>

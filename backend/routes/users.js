@@ -20,7 +20,9 @@ router.post('/register', async (req, res) => {
         const newUser = new User({username, email, password: hashPass, isCoach})
 
         await newUser.save()
-        res.status(201).json(newUser)
+        const token = jwt.sign({ email: newUser.email}, process.env.SECRET_KEY, { expiresIn: "1h"})
+
+        res.status(201).json( {token, newUser})
         
     } catch (error) {
         res.status(500).json({error: 'Error registering user'})
@@ -43,7 +45,7 @@ router.post('/login', async (req, res) => {
             return
         }
 
-        const token = jwt.sign({ email: user.email}, process.env.SECRET_KEY, { expiresIn: "2m"})
+        const token = jwt.sign({ email: user.email}, process.env.SECRET_KEY, { expiresIn: "1h"})
         res.json({ token, user})
     } catch (err) {
         res.status(500).json({error: 'Error logging in'})
